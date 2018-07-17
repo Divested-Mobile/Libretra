@@ -1,5 +1,5 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="app_name" translatable="false">Intra</string>
+  <string name="app_name" translatable="false">LibreIntra</string>
 
   <!-- Headline for the welcome screen. -->
   <string name="about_headline">Honest and secure DNS</string>
