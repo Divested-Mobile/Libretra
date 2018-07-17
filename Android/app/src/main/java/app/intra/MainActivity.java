@@ -64,7 +64,6 @@ import android.widget.ToggleButton;
 
 import app.intra.util.DnsQueryTracker;
 import app.intra.util.DnsTransaction;
-import app.intra.util.Feedback;
 import app.intra.util.Names;
 
 import java.net.InetAddress;

@@ -2,6 +2,7 @@ allprojects {
     // The app and tests do not depend on any non-Google servers (e.g. jcenter, mavenCentral).
     repositories {
         google()
+        jcenter()
     }
 }
 

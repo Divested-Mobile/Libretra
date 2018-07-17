@@ -26,7 +26,8 @@ repositories {
 
 dependencies {
     // Third-party dependency: OkHttp3
-    compile fileTree(include: ['okhttp-3.9.1.jar', 'okio-1.13.0.jar'], dir: 'libs')
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.squareup.okio:okio:1.13.0'
 
     // Third-party test dependencies.
     testCompile 'junit:junit:4.12'
