@@ -31,8 +31,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import java.util.Queue;
 
 
@@ -158,7 +156,7 @@ public class HistoryGraph extends View {
     long now = SystemClock.elapsedRealtime();
     float[] curve = getQpsCurve(now);
     if (curve.length <= 1) {
-      FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Logic error in curve computation");
+      Log.e(LOG_TAG, "Logic error in curve computation");
       return;
     }
     updateMax(curve);

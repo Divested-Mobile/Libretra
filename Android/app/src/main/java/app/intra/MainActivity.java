@@ -62,8 +62,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import app.intra.util.DnsQueryTracker;
 import app.intra.util.DnsTransaction;
 import app.intra.util.Feedback;
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           if (Names.RESULT.name().equals(intent.getAction())) {
             DnsVpnService dnsVpnService = DnsVpnServiceState.getInstance().getDnsVpnService();
             if (dnsVpnService == null) {
-              FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Found unexpected null DnsVpnService");
+              Log.e(LOG_TAG, "Found unexpected null DnsVpnService");
               return;
             }
             updateStatsDisplay(getNumRequests(),
@@ -217,8 +215,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         // Send user feedback to Crashlytics
         EditText userErrorReport = (EditText) findViewById(R.id.feedbackContent);
         String userMessage = userErrorReport.getText().toString();
-        FirebaseCrash.logcat(Log.INFO, LOG_TAG, userMessage);
-        FirebaseCrash.report(new Feedback("User feedback"));
+        Log.i(LOG_TAG, userMessage);
 
         // Go back to the home screen
         chooseView(R.id.frame_main);
@@ -398,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         startDnsVpnService();
       }
     } else {
-      FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Device does not support system-wide VPN mode.");
+      Log.e(LOG_TAG, "Device does not support system-wide VPN mode.");
     }
   }
 

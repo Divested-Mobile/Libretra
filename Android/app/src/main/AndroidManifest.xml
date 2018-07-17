@@ -38,9 +38,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-
-        <!-- Uncomment the below line for network performance debug logging -->
-        <!-- <meta-data android:name="firebase_performance_logcat_enabled" android:value="true" /> -->
     </application>
 
 </manifest>

@@ -29,7 +29,6 @@ import java.nio.ByteBuffer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import com.google.firebase.crash.FirebaseCrash;
 import app.intra.util.DnsMetadata;
 import app.intra.util.DnsPacket;
 import app.intra.util.DnsTransaction;
@@ -79,12 +78,12 @@ public class DnsResolverUdpToHttps extends Thread {
   // In addition to reading DNS requests from the VPN interface and forwarding them via HTTPS, this
   // thread is responsible for maintaining a connected socket to Google's DNS-over-HTTPS API.
   public void run() {
-    FirebaseCrash.logcat(Log.DEBUG, LOG_TAG, "Query thread starting");
+    Log.d(LOG_TAG, "Query thread starting");
     if (tunFd == null) {
       // This check is necessary due to a race, where the VPN has been closed and the device regains
       // network connectivity before the service stops. As a result the TUN file descriptor is null
       // at the time the resolver is created.
-      FirebaseCrash.logcat(Log.WARN, LOG_TAG, "VPN/TUN file descriptor is null");
+      Log.w(LOG_TAG, "VPN/TUN file descriptor is null");
       return;
     }
 
@@ -100,8 +99,7 @@ public class DnsResolverUdpToHttps extends Thread {
           length = in.read(buffer.array());
         } catch (IOException e) {
           if (!isInterrupted()) {
-            FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Failed to read from tun interface.");
-            FirebaseCrash.report(e);
+            Log.e(LOG_TAG, "Failed to read from tun interface.");
           }
           return;
         }
@@ -115,7 +113,7 @@ public class DnsResolverUdpToHttps extends Thread {
           continue;
         }
         if (length < IP_MIN_HEADER_LENGTH) {
-          FirebaseCrash.logcat(Log.WARN, LOG_TAG, "Received malformed IP packet.");
+          Log.w(LOG_TAG, "Received malformed IP packet.");
           continue;
         }
         buffer.limit(length);
@@ -130,30 +128,29 @@ public class DnsResolverUdpToHttps extends Thread {
             ipPacket = new Ipv6Packet(buffer);
           }
         } catch (IllegalArgumentException e) {
-          FirebaseCrash
-              .logcat(Log.WARN, LOG_TAG, "Received malformed IP packet: " + e.getMessage());
+          Log.w(LOG_TAG, "Received malformed IP packet: " + e.getMessage());
           continue;
         }
         byte protocol = ipPacket.getProtocol();
         if (protocol != UDP_PROTOCOL) {
-          FirebaseCrash.logcat(Log.WARN, LOG_TAG, getProtocolErrorMessage(protocol));
+          Log.w(LOG_TAG, getProtocolErrorMessage(protocol));
           continue;
         }
 
         UdpPacket udpPacket = new UdpPacket(ByteBuffer.wrap(ipPacket.getPayload()));
         if (udpPacket.destPort != DNS_DEFAULT_PORT) {
-          FirebaseCrash.logcat(Log.WARN, LOG_TAG, "Received non-DNS UDP packet");
+          Log.w(LOG_TAG, "Received non-DNS UDP packet");
           continue;
         }
 
         if (udpPacket.length == 0) {
-          FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Received interrupt UDP packet.");
+          Log.i(LOG_TAG, "Received interrupt UDP packet.");
           continue;
         }
 
         DnsMetadata dnsRequest = parseDnsPacket(udpPacket.data);
         if (dnsRequest == null) {
-          FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Failed to parse DNS request");
+          Log.e(LOG_TAG, "Failed to parse DNS request");
           continue;
         }
         Log.d(
@@ -179,8 +176,7 @@ public class DnsResolverUdpToHttps extends Thread {
 
       } catch (Exception e) {
         if (!isInterrupted()) {
-          FirebaseCrash.logcat(Log.WARN, LOG_TAG, "Unexpected exception in UDP loop.");
-          FirebaseCrash.report(e);
+          Log.w(LOG_TAG, "Unexpected exception in UDP loop.");
         }
       }
     }
@@ -202,18 +198,18 @@ public class DnsResolverUdpToHttps extends Thread {
     try {
       dnsPacket = new DnsPacket(data);
     } catch (ProtocolException e) {
-      FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Received invalid DNS request");
+      Log.i(LOG_TAG, "Received invalid DNS request");
       return null;
     }
     if (!dnsPacket.isNormalQuery() && !dnsPacket.isResponse()) {
-      FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Dropping strange DNS query");
+      Log.i(LOG_TAG, "Dropping strange DNS query");
       return null;
     }
 
     dnsMetadata.type = dnsPacket.getQueryType();
     dnsMetadata.name = dnsPacket.getQueryName();
     if (dnsMetadata.name == null || dnsMetadata.type == 0) {
-      FirebaseCrash.logcat(Log.INFO, LOG_TAG, "No question in DNS packet");
+      Log.i(LOG_TAG, "No question in DNS packet");
       return null;
     }
     dnsMetadata.requestId = dnsPacket.getId();
@@ -273,7 +269,7 @@ public class DnsResolverUdpToHttps extends Thread {
     @Override
     public void onFailure(Call call, IOException e) {
       transaction.status = DnsTransaction.Status.SEND_FAIL;
-      FirebaseCrash.logcat(Log.WARN, LOG_TAG, "Failed to read HTTPS response: " + e.toString());
+      Log.w(LOG_TAG, "Failed to read HTTPS response: " + e.toString());
     }
 
     private void sendResult() {
@@ -281,7 +277,7 @@ public class DnsResolverUdpToHttps extends Thread {
       if (dnsVpnService != null) {
         dnsVpnService.recordTransaction(transaction);
       } else {
-        FirebaseCrash.logcat(Log.INFO, LOG_TAG, "VPN service was gone when result arrived.");
+        Log.i(LOG_TAG, "VPN service was gone when result arrived.");
       }
     }
 
@@ -306,7 +302,7 @@ public class DnsResolverUdpToHttps extends Thread {
       if (parsedDnsResponse != null) {
         Log.d(LOG_TAG, "RNAME: " + parsedDnsResponse.name + " NAME: " + dnsMetadata.name);
         if (!dnsMetadata.name.equals(parsedDnsResponse.name)) {
-          FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Mismatch in request and response names.");
+          Log.e(LOG_TAG, "Mismatch in request and response names.");
           transaction.status = DnsTransaction.Status.BAD_RESPONSE;
           sendResult();
           return;
@@ -339,7 +335,7 @@ public class DnsResolverUdpToHttps extends Thread {
       try {
         outputStream.write(rawIpResponse);
       } catch (IOException e) {
-        FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Failed to write to VPN/TUN interface.");
+        Log.e(LOG_TAG, "Failed to write to VPN/TUN interface.");
         transaction.status = DnsTransaction.Status.INTERNAL_ERROR;
       }
 

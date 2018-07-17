@@ -33,8 +33,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.crash.FirebaseCrash;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -67,8 +65,6 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
   private DnsResolverUdpToHttps dnsResolver = null;
   private ServerConnection serverConnection = null;
   private String url = null;
-
-  private FirebaseAnalytics firebaseAnalytics;
 
   private BroadcastReceiver messageReceiver =
       new BroadcastReceiver() {
@@ -178,7 +174,6 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     }
 
     if (serverConnection == null) {
-      firebaseAnalytics.logEvent(Names.BOOTSTRAP_FAILED.name(), bootstrap);
       stopSelf();
       return;
     }
@@ -186,7 +181,6 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     // Measure bootstrap delay.
     long afterBootStrap = SystemClock.elapsedRealtime();
     bootstrap.putInt(Names.LATENCY.name(), (int) (afterBootStrap - beforeBootstrap));
-    firebaseAnalytics.logEvent(Names.BOOTSTRAP.name(), bootstrap);
 
     if (dnsResolver != null) {
       dnsResolver.serverConnection = serverConnection;
@@ -209,7 +203,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
     tunFd = establishVpn();
     if (tunFd == null) {
-      FirebaseCrash.logcat(Log.WARN, LOG_TAG, "Failed to get TUN device");
+      Log.w(LOG_TAG, "Failed to get TUN device");
       stopSelf();
       return;
     }
@@ -220,10 +214,8 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
   @Override
   public void onCreate() {
-    FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Creating DNS VPN service");
+    Log.i(LOG_TAG, "Creating DNS VPN service");
     DnsVpnServiceState.getInstance().setDnsVpnService(DnsVpnService.this);
-
-    firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     syncNumRequests();
 
@@ -237,9 +229,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
   public void signalStopService(boolean userInitiated) {
     // TODO(alalama): display alert if not user initiated
-    FirebaseCrash.logcat(
-        Log.INFO,
-        LOG_TAG,
+    Log.i(LOG_TAG,
         String.format("Received stop signal. User initiated: %b", userInitiated));
 
     // stopDnsResolver() performs network activity, so it can't run on the main thread due to
@@ -262,8 +252,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
       try {
         tunFd.close();
       } catch (IOException e) {
-        FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Failed to close the VPN interface.");
-        FirebaseCrash.report(e);
+        Log.e(LOG_TAG, "Failed to close the VPN interface.");
       } finally {
         tunFd = null;
       }
@@ -284,13 +273,13 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     } catch (IOException e) {
       // An IOException likely means that the VPN has already been torn down, so there's no need for
       // this ping.
-      FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "Failed to send UDP ping: " + e.getMessage());
+      Log.e(LOG_TAG, "Failed to send UDP ping: " + e.getMessage());
     }
   }
 
   private synchronized void startDnsResolver() {
     if (dnsResolver == null && serverConnection != null) {
-      FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Starting DNS resolver");
+      Log.i(LOG_TAG, "Starting DNS resolver");
       dnsResolver = new DnsResolverUdpToHttps(tunFd, serverConnection);
       dnsResolver.start();
     }
@@ -306,7 +295,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
   @Override
   public synchronized void onDestroy() {
-    FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Destroying DNS VPN service");
+    Log.i(LOG_TAG, "Destroying DNS VPN service");
     broadcastIntent(false);
 
     if (networkManager != null) {
@@ -329,10 +318,9 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
   @Override
   public void onRevoke() {
-    FirebaseCrash.logcat(Log.ERROR, LOG_TAG, "VPN service revoked.");
+    Log.e(LOG_TAG, "VPN service revoked.");
     // Revocation isn't intrinsically an error, but it can occur as a result of error conditions,
     // and user-initiated revocation is expected to be extremely rare.
-    FirebaseCrash.report(new Error("onRevoke"));
     stopDnsResolver();
     stopSelf();
 
@@ -377,8 +365,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     privateIpv6Address = new PrivateAddress(IPV6_SUBNET, 120);
     privateIpv4Address = selectPrivateAddress();
     if (privateIpv4Address == null) {
-      FirebaseCrash.logcat(
-          Log.ERROR, LOG_TAG, "Unable to find a private address on which to establish a VPN.");
+      Log.e(LOG_TAG, "Unable to find a private address on which to establish a VPN.");
       return null;
     }
     Log.i(LOG_TAG, String.format("VPN address: { IPv4: %s, IPv6: %s }",
@@ -406,19 +393,15 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
           // https://code.google.com/p/android/issues/detail?id=210305
           builder = builder.addDisallowedApplication("com.android.vending");
         } catch (Exception e) {
-          FirebaseCrash.report(e);
           Log.e(LOG_TAG, "Failed to exclude Play Store", e);
         }
       }
       tunFd = builder.establish();
     } catch (IllegalArgumentException e) {
-      FirebaseCrash.report(e);
       Log.e(LOG_TAG, establishVpnErrorMsg, e);
     } catch (SecurityException e) {
-      FirebaseCrash.report(e);
       Log.e(LOG_TAG, establishVpnErrorMsg, e);
     } catch (IllegalStateException e) {
-      FirebaseCrash.report(e);
       Log.e(LOG_TAG, establishVpnErrorMsg, e);
     }
 
@@ -457,7 +440,6 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     try {
       netInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
     } catch (SocketException e) {
-      FirebaseCrash.report(e);
       e.printStackTrace();
       return null;
     }
@@ -515,7 +497,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
   // NetworkListener interface implementation
   @Override
   public void onNetworkConnected(NetworkInfo networkInfo) {
-    FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Connected event.");
+    Log.i(LOG_TAG, "Connected event.");
     if (tunFd != null) {
       startDnsResolver();
     } else {
@@ -532,7 +514,7 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
 
   @Override
   public void onNetworkDisconnected() {
-    FirebaseCrash.logcat(Log.INFO, LOG_TAG, "Disconnected event.");
+    Log.i(LOG_TAG, "Disconnected event.");
     // stopDnsResolver performs network activity so it has to run on a separate thread.
     new Thread(
             new Runnable() {
