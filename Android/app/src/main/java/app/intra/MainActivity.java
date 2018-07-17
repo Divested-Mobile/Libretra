@@ -53,24 +53,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import app.intra.util.DnsQueryTracker;
-import app.intra.util.DnsTransaction;
-import app.intra.util.Names;
 
 import java.net.InetAddress;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import app.intra.util.DnsQueryTracker;
+import app.intra.util.DnsTransaction;
+import app.intra.util.Names;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
@@ -174,14 +172,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           case R.id.home:
             chooseView(R.id.frame_main);
             return true;
-          case R.id.report_error:
-            chooseView(R.id.frame_report);
-            return true;
           case R.id.privacy:
-            openUrl("https://developers.google.com/speed/public-dns/privacy");
-            return true;
-          case R.id.tos:
-            openUrl("https://jigsaw.google.com/jigsaw-tos.html");
+            openUrl("https://developers.cloudflare.com/1.1.1.1/commitment-to-privacy/privacy-policy/privacy-policy/");
             return true;
           case R.id.source_code:
             openUrl("https://github.com/Jigsaw-Code/intra");
@@ -205,21 +197,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     IntentFilter intentFilter = new IntentFilter(Names.RESULT.name());
     intentFilter.addAction(Names.DNS_STATUS.name());
     LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, intentFilter);
-
-    // Connect error report button
-    Button errorButton = (Button) findViewById(R.id.feedbackButton);
-    errorButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        // Send user feedback to Crashlytics
-        EditText userErrorReport = (EditText) findViewById(R.id.feedbackContent);
-        String userMessage = userErrorReport.getText().toString();
-        Log.i(LOG_TAG, userMessage);
-
-        // Go back to the home screen
-        chooseView(R.id.frame_main);
-      }
-    });
 
     prepareHyperlinks(this, findViewById(R.id.activity_main));
   }
@@ -549,9 +526,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void chooseView(int id) {
     View home = findViewById(R.id.frame_main);
-    View report = findViewById(R.id.frame_report);
     home.setVisibility(View.GONE);
-    report.setVisibility(View.GONE);
 
     View selected = findViewById(id);
     selected.setVisibility(View.VISIBLE);
@@ -560,9 +535,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     switch (id) {
       case R.id.frame_main:
         actionBar.setTitle(R.string.app_name);
-        break;
-      case R.id.frame_report:
-        actionBar.setTitle(R.string.feedback);
         break;
     }
 

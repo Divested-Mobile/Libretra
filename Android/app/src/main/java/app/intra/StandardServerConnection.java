@@ -15,10 +15,6 @@ limitations under the License.
 */
 package app.intra;
 
-import app.intra.util.DnsMetadata;
-import app.intra.util.DualStackResult;
-import app.intra.util.IpTagInterceptor;
-
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import app.intra.util.DnsMetadata;
+import app.intra.util.DualStackResult;
+import app.intra.util.IpTagInterceptor;
 import okhttp3.Callback;
 import okhttp3.Dns;
 import okhttp3.MediaType;
@@ -102,7 +101,7 @@ public class StandardServerConnection implements ServerConnection {
     RequestBody body = RequestBody.create(mediaType, data);
     Request request = new Request.Builder()
         .url(url)
-        .header("User-Agent", String.format("Jigsaw-DNS/%s", BuildConfig.VERSION_NAME))
+        .header("User-Agent", String.format("Jigsaw-DNS Libre/%s", BuildConfig.VERSION_NAME))
         .post(body)
         .build();
     client.newCall(request).enqueue(cb);

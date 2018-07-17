@@ -15,9 +15,9 @@ limitations under the License.
 */
 package app.intra;
 
-import app.intra.util.DnsQueryTracker;
-
 import android.content.Context;
+
+import app.intra.util.DnsQueryTracker;
 
 // Singleton class to maintain state related to VPN Tunnel service.
 public class DnsVpnServiceState {

@@ -24,7 +24,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.AssetManager;
 import android.net.NetworkInfo;
 import android.net.VpnService;
 import android.os.Build;
@@ -33,6 +32,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -45,8 +45,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import app.intra.util.DnsTransaction;
 import app.intra.util.DnsQueryTracker;
+import app.intra.util.DnsTransaction;
 import app.intra.util.Names;
 
 public class DnsVpnService extends VpnService implements NetworkManager.NetworkListener {
@@ -166,10 +166,6 @@ public class DnsVpnService extends VpnService implements NetworkManager.NetworkL
     Bundle bootstrap = new Bundle();
     long beforeBootstrap = SystemClock.elapsedRealtime();
     if (url == null || url.isEmpty()) {
-      // Use the Google Resolver
-      AssetManager assets = this.getApplicationContext().getAssets();
-      serverConnection = GoogleServerConnection.get(new GoogleServerDatabase(assets));
-    } else {
       serverConnection = StandardServerConnection.get(url);
     }
 

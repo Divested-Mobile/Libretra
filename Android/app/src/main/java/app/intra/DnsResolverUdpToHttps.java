@@ -20,15 +20,14 @@ import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ProtocolException;
 import java.nio.ByteBuffer;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+
 import app.intra.util.DnsMetadata;
 import app.intra.util.DnsPacket;
 import app.intra.util.DnsTransaction;
@@ -38,8 +37,11 @@ import app.intra.util.Ipv4Packet;
 import app.intra.util.Ipv6Packet;
 import app.intra.util.Names;
 import app.intra.util.UdpPacket;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
-// Reads DNS requests over UDP from |tunFd|, forwards them to Google Public DNS through HTTPS and
+// Reads DNS requests over UDP from |tunFd|, forwards them and
 // writes them back to the tun interface. Takes ownership of the file descriptor.
 public class DnsResolverUdpToHttps extends Thread {
 
@@ -76,7 +78,7 @@ public class DnsResolverUdpToHttps extends Thread {
 
   @Override
   // In addition to reading DNS requests from the VPN interface and forwarding them via HTTPS, this
-  // thread is responsible for maintaining a connected socket to Google's DNS-over-HTTPS API.
+  // thread is responsible for maintaining a connected socket to a DNS-over-HTTPS API.
   public void run() {
     Log.d(LOG_TAG, "Query thread starting");
     if (tunFd == null) {

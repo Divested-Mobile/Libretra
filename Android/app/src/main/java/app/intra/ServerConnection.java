@@ -16,7 +16,6 @@ limitations under the License.
 package app.intra;
 
 import app.intra.util.DnsMetadata;
-
 import okhttp3.Callback;
 
 /**

@@ -9,10 +9,7 @@
         queries by routing them over a secure HTTPS connection. This reduces the chance that you will be sent to the wrong site, or have your browsing blocked or observed.</string>
 
   <!-- Privacy text for the welcome screen. -->
-  <string name="privacy_text">By default, your queries will be routed to
-        <a href="https://developers.google.com/speed/public-dns/">Google Public DNS</a>
-        (<a href="https://developers.google.com/speed/public-dns/privacy">Privacy Policy</a>).
-        You can also choose to use <a href="https://cloudflare-dns.com">Cloudflare</a>
+  <string name="privacy_text">By default, your queries will be routed to <a href="https://cloudflare-dns.com">Cloudflare</a>
         (<a href="https://developers.cloudflare.com/1.1.1.1/commitment-to-privacy/privacy-policy/privacy-policy/">Privacy Policy</a>).</string>
 
   <!-- Button label to exit the welcome screen. -->
@@ -79,8 +76,7 @@
   that is always "dns".-->
   <string name="insecure_transport_label">Unencrypted transport</string>
 
-  <!-- This text appears under the name of the secure server currently in use.  Currently, that
-   is always "dns.google.com".-->
+  <!-- This text appears under the name of the secure server currently in use. -->
   <string name="server_label">Secure DNS server</string>
 
   <!-- This text appears under the name of the insecure server currently in use. -->
@@ -114,11 +110,8 @@
   <string name="latency_ms" translatable="false"><xliff:g example="29" id="time">%d</xliff:g> ms</string>
 
   <!-- Text that appears above the feedback text entry field. -->
-  <string name="before_feedback">Help us improve Intra! Intra is an early-stage product and we need your help to make it better.  Tell us what\'s
-        working, and what\'s not.  Thanks!</string>
 
   <!-- Hint that appears in the text field where the user will type their complaint or error. -->
-  <string name="feedback_hint">Your feedback</string>
 
   <!-- Text that appears after the feedback text entry field, warning users not to include
   personally identifying information that could violate their privacy. -->

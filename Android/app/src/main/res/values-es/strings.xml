@@ -8,10 +8,7 @@
     </string>
 
     <!-- Privacy text for the welcome screen. -->
-    <string name="privacy_text">Tus consultas serán enviadas por defecto a
-        <a href="https://developers.google.com/speed/public-dns/">Google Public DNS</a>
-        (<a href="https://developers.google.com/speed/public-dns/privacy">Política de Privacidad</a>).
-        También puedes utilizar <a href="https://cloudflare-dns.com">Cloudflare</a>
+    <string name="privacy_text">Tus consultas serán enviadas por defecto a <a href="https://cloudflare-dns.com">Cloudflare</a>
         (<a href="https://developers.cloudflare.com/1.1.1.1/commitment-to-privacy/privacy-policy/privacy-policy/">Política de Privacidad</a>).</string>
 
     <!-- Button label to exit the welcome screen. -->
@@ -82,8 +79,7 @@
     that is always "dns".-->
     <string name="insecure_transport_label">Transporte no encriptado</string>
 
-    <!-- This text appears under the name of the secure server currently in use.  Currently, that
-     is always "dns.google.com".-->
+    <!-- This text appears under the name of the secure server currently in use. -->
     <string name="server_label">Servidor DNS seguro</string>
 
     <!-- This text appears under the name of the insecure server currently in use. -->
@@ -114,12 +110,8 @@
     <string name="destination_label">Servidor de destino</string>
 
     <!-- Text that appears above the feedback text entry field. -->
-    <string name="before_feedback">¡Ayúdanos a mejorar Intra!
-        Intra es un producto en desarrollo y necesitamos tu ayuda para mejorarlo.
-        Cuéntanos que está funcionando y qué no. ¡Gracias!</string>
 
     <!-- Hint that appears in the text field where the user will type their complaint or error. -->
-    <string name="feedback_hint">Tus comentarios</string>
 
     <!-- Text that appears after the feedback text entry field, warning users not to include
     personally identifying information that could violate their privacy. -->

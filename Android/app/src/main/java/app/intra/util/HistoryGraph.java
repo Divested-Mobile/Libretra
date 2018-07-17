@@ -15,23 +15,23 @@ limitations under the License.
 */
 package app.intra.util;
 
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
-import app.intra.DnsVpnServiceState;
-import app.intra.R;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader.TileMode;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
 import java.util.Queue;
+
+import app.intra.DnsVpnServiceState;
+import app.intra.R;
 
 
 /**

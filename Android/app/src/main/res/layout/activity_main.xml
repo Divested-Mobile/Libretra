@@ -29,11 +29,6 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:visibility="visible"/>
-
-      <include
-          android:id="@+id/frame_report"
-          layout="@layout/feedback"
-          android:visibility="gone"/>
     </FrameLayout>
   </LinearLayout>
 

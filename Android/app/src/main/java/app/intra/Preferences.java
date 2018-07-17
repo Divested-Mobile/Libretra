@@ -2,10 +2,9 @@ package app.intra;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Static class representing on-disk storage of mutable state.  Collecting this all in one class
@@ -78,28 +77,6 @@ public class Preferences {
       }
     }
     return null;
-  }
-
-  public static Set<String> getExtraGoogleV4Servers(Context context) {
-    return getSettings(context).getStringSet(EXTRA_SERVERS_V4_KEY, new HashSet<String>());
-  }
-
-  public static void setExtraGoogleV4Servers(Context context, String[] servers) {
-    SharedPreferences.Editor editor = getSettings(context).edit();
-    editor.putStringSet(EXTRA_SERVERS_V4_KEY,
-        new HashSet<String>(Arrays.asList(servers)));
-    editor.apply();
-  }
-
-  public static Set<String> getExtraGoogleV6Servers(Context context) {
-    return getSettings(context).getStringSet(EXTRA_SERVERS_V6_KEY, new HashSet<String>());
-  }
-
-  public static void setExtraGoogleV6Servers(Context context, String[] servers) {
-    SharedPreferences.Editor editor = getSettings(context).edit();
-    editor.putStringSet(EXTRA_SERVERS_V6_KEY,
-        new HashSet<String>(Arrays.asList(servers)));
-    editor.apply();
   }
 
   private static SharedPreferences getApprovalSettings(Context context) {

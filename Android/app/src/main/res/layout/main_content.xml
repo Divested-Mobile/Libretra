@@ -231,7 +231,7 @@
             android:scrollbars="horizontal"
             android:singleLine="true"
             android:textIsSelectable="true"
-            android:text="dns.google.com"
+            android:text="cloudflare-dns.com"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
         <ImageView
