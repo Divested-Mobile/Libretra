@@ -19,8 +19,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -119,7 +117,6 @@ class UdpOverrideSocksHandler extends Socks5Handler {
       event.putLong(Names.UPLOAD.name(), dnsPacketHandler.getNonDnsUploadNumBytes());
       event.putLong(Names.DOWNLOAD.name(), dnsPacketHandler.getNonDnsDownloadNumBytes());
       event.putLong(Names.DURATION.name(), (SystemClock.elapsedRealtime() - startTimeMs) / 1000);
-      FirebaseAnalytics.getInstance(context).logEvent(Names.UDP.name(), event);
     }
   }
 

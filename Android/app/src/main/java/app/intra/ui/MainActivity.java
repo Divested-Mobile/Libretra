@@ -80,7 +80,6 @@ import app.intra.sys.VpnState;
 import app.intra.ui.settings.ServerApprovalDialogFragment;
 import app.intra.ui.settings.SettingsFragment;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -209,15 +208,6 @@ public class MainActivity extends AppCompatActivity
           case R.id.settings:
             chooseView(R.id.settings);
             return true;
-          case R.id.support:
-            openUrl("https://support.getintra.org/");
-            return true;
-          case R.id.privacy:
-            openUrl("https://getintra.org/privacy");
-            return true;
-          case R.id.tos:
-            openUrl("https://jigsaw.google.com/jigsaw-tos.html");
-            return true;
           case R.id.source_code:
             openUrl("https://github.com/Jigsaw-Code/intra");
             return true;
@@ -301,15 +291,12 @@ public class MainActivity extends AppCompatActivity
       tryAllButton.setEnabled(false);
       tryAllButton.setText(R.string.checking_servers);
       String[] urls = getResources().getStringArray(R.array.urls);
-      FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(this);
-      analytics.logEvent(Names.TRY_ALL_REQUESTED.name(), null);
       // The result needs to be posted to the UI thread before we can make UI changes.
       new Race(new ServerConnectionFactory(this), urls, (int index) -> view.post(() -> {
         if (index >= 0) {
           new ServerApprovalDialogFragment(index).show(getSupportFragmentManager(), "dialog");
         } else {
           Toast.makeText(this, R.string.all_servers_failed, Toast.LENGTH_LONG).show();
-          analytics.logEvent(Names.TRY_ALL_FAILED.name(), null);
         }
         tryAllButton.setText(R.string.try_all_servers);
         tryAllButton.setEnabled(true);

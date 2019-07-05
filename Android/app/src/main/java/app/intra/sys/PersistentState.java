@@ -78,32 +78,10 @@ public class PersistentState {
 
     // There is no URL setting, so read the legacy server name.
     SharedPreferences settings = getInternalState(context);
-    String defaultDomain = context.getResources().getString(R.string.domain0);
-    String domain = settings.getString(SERVER_KEY, defaultDomain);
-
-    if (domain == null) {
-      // Legacy setting is in the default state, so we can leave the new URL setting in the default
-      // state as well.
-      return;
-    }
 
     // Special case: url 0 is the nonstandard DoH service on dns.google.com.
-    // TODO: Remove this special case once dns.google.com transitions to standard DoH.
     String[] urls = context.getResources().getStringArray(R.array.urls);
     String url = null;
-    if (domain.equals(defaultDomain)) {
-      url = urls[0];
-    }
-
-    // Look for the corresponding URL among the other builtin servers.
-    for (int i = 1; i < urls.length; ++i) {
-      Uri parsed = Uri.parse(urls[i]);
-
-      if (domain.equals(parsed.getHost())) {
-        url = urls[i];
-        break;
-      }
-    }
 
     if (url == null) {
       LogWrapper.log(Log.WARN, LOG_TAG, "Legacy domain is unrecognized");
@@ -138,9 +116,6 @@ public class PersistentState {
 
   public static String getServerName(Context context) {
     String url = getServerUrl(context);
-    if (url == null || url.isEmpty()) {
-      return context.getResources().getString(R.string.domain0);
-    }
     return extractHost(url);
   }
 
@@ -151,9 +126,6 @@ public class PersistentState {
    * built-in servers.
    */
   public static String extractHostForAnalytics(Context context, String url) {
-    if (url == null || url.isEmpty()) {
-      return context.getResources().getString(R.string.domain0);
-    }
     String[] urls = context.getResources().getStringArray(R.array.urls);
     if (Arrays.asList(urls).contains(url)) {
       return extractHost(url);

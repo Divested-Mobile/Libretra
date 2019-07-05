@@ -1,33 +1,11 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
-
-// See https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-try {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-} catch (Exception ex) {
-    logger.warn("No keys.  Release disabled: $ex.message")
-    keystoreProperties['keyAlias'] = ''
-    keystoreProperties['keyPassword'] = ''
-    keystoreProperties['storeFile'] = '/dev/null'
-    keystoreProperties['storePassword'] = ''
-}
 
 android {
-    signingConfigs {
-        config {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "app.intra"
+        applicationId "us.spotco.libretra"
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 36
@@ -39,7 +17,6 @@ android {
                 includeCompileClasspath false
             }
         }
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     lintOptions {
         // Ignore lint errors that we believe are safe to ignore.
@@ -51,20 +28,14 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-            signingConfig signingConfigs.config
-            resValue("bool", "FIREBASE_ENABLED", "true")
         }
         debug {
             pseudoLocalesEnabled true
-            resValue("bool", "FIREBASE_ENABLED", "false")
             // Split build across multiple dex files.  This is necessary mostly because Guava adds
             // so many classes that we exceed the dex limit (65536 methods).  This does not apply
             // to release builds, where unused classes are pruned.
             multiDexEnabled true
         }
-    }
-    testOptions {
-        unitTests.returnDefaultValues = true
     }
     sourceSets {
         main.java.srcDirs += '../third_party/sockslib/src/main/java/'
@@ -79,35 +50,14 @@ android {
     }
 }
 repositories {
-    maven {
-        url 'test-repo'
-    }
-    maven {
-        url '../gradle-plugin-repo'
-    }
-    maven {
-        url '../firebase-repo'
-    }
-    maven {
-        url '../sockslib-repo'
-    }
+    jcenter()
 }
 
 dependencies {
-    // Third-party dependency: OkHttp3
-    implementation fileTree(include: [
-            'okhttp-3.12.3.jar',  // 3.12.* has branched to support API <21.  3.13+ doesn't.
-            'okio-1.15.0.jar',
-            'guava-27.1-android.jar'
-    ], dir: 'libs')
-
     // Third-party test dependencies.
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.json:json:20171018'
-    testImplementation 'org.mockito:mockito-core:2.13.0'
-    // Required for instrumented tests
-    androidTestImplementation 'androidx.annotation:annotation:1.0.0'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.3'
+    implementation 'com.squareup.okio:okio:1.15.0'
+    implementation 'com.google.guava:guava:28.0-android'
     // UI libraries.
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.material:material:1.0.0'
@@ -115,16 +65,9 @@ dependencies {
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    // For Firebase Analytics, etc.
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-    implementation 'com.google.firebase:firebase-perf:16.2.5'  // Last version to support API <17
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
     // For Sockslib
-    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.26'
     implementation 'org.slf4j:slf4j-android:1.7.25'
     compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
     compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
 }
-// For Firebase Analytics
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.firebase-perf'

@@ -20,8 +20,6 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
 import app.intra.R;
-import app.intra.net.doh.google.GoogleServerConnection;
-import app.intra.net.doh.google.GoogleServerDatabase;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -77,12 +75,6 @@ public class ServerConnectionFactory {
   }
 
   public ServerConnection get(String url) {
-    if (equalUrls(url, null)) {
-      // Use the Google Resolver
-      AssetManager assets = context.getAssets();
-      return GoogleServerConnection.get(new GoogleServerDatabase(context, assets), null);
-    }
-
     return StandardServerConnection.get(url, getKnownIps(url));
   }
 }

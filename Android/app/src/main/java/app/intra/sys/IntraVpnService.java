@@ -43,12 +43,10 @@ import app.intra.net.VpnAdapter;
 import app.intra.net.doh.ServerConnection;
 import app.intra.net.doh.ServerConnectionFactory;
 import app.intra.net.doh.Transaction;
-import app.intra.net.doh.google.GoogleServerConnection;
 import app.intra.net.socks.SocksVpnAdapter;
 import app.intra.net.split.SplitVpnAdapter;
 import app.intra.sys.NetworkManager.NetworkListener;
 import app.intra.ui.MainActivity;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.Calendar;
 
 public class IntraVpnService extends VpnService implements NetworkListener,
@@ -86,8 +84,6 @@ public class IntraVpnService extends VpnService implements NetworkListener,
   // indicates a pending connection, serverConnection should be null to avoid sending queries to the
   // previously selected server.
   private String pendingUrl = NO_PENDING_CONNECTION;
-
-  private FirebaseAnalytics firebaseAnalytics;
 
   public boolean isOn() {
     return vpnAdapter != null;
@@ -227,19 +223,13 @@ public class IntraVpnService extends VpnService implements NetworkListener,
     final ServerConnection newConnection = (new ServerConnectionFactory(this)).get(url);
 
     if (newConnection != null) {
-      if (newConnection instanceof GoogleServerConnection &&
-          ((GoogleServerConnection)newConnection).didBootstrapWithFallback()) {
-        bootstrap.putString(Names.FALLBACK.name(), Names.ALTERNATE_HOSTNAME.name());
-      }
       controller.onConnectionStateChanged(this, ServerConnection.State.WORKING);
 
       // Measure bootstrap delay.
       long afterBootStrap = SystemClock.elapsedRealtime();
       bootstrap.putInt(Names.LATENCY.name(), (int) (afterBootStrap - beforeBootstrap));
-      firebaseAnalytics.logEvent(Names.BOOTSTRAP.name(), bootstrap);
     } else {
       controller.onConnectionStateChanged(this, ServerConnection.State.FAILING);
-      firebaseAnalytics.logEvent(Names.BOOTSTRAP_FAILED.name(), bootstrap);
     }
 
     // Step 3: Unset the flag and confirm the update.
@@ -300,8 +290,6 @@ public class IntraVpnService extends VpnService implements NetworkListener,
   public void onCreate() {
     LogWrapper.log(Log.INFO, LOG_TAG, "Creating DNS VPN service");
     VpnController.getInstance().setIntraVpnService(this);
-
-    firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
     syncNumRequests();
   }

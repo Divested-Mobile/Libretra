@@ -17,35 +17,13 @@ package app.intra.sys;
 
 import android.util.Log;
 import app.intra.BuildConfig;
-import com.crashlytics.android.Crashlytics;
 
-/**
- * Wrapper for Crashlytics.  This allows unit testing of classes that contain logging and allows
- * us to cleanly disable Crashlytics in debug builds.
- * See https://stackoverflow.com/questions/16986753/how-to-disable-crashlytics-during-development
- */
 public class LogWrapper {
   public static void logException(Throwable t) {
-    if (BuildConfig.DEBUG) {
-      Log.e("LogWrapper", "Error", t);
-      return;
-    }
-    try {
-      Crashlytics.logException(t);
-    } catch (IllegalStateException e) {
-      // This only occurs during unit tests.
-    }
+    Log.e("LogWrapper", "Error", t);
   }
 
   public static void log(int i, String s, String s1) {
-    if (BuildConfig.DEBUG) {
-      Log.println(i, s, s1);
-      return;
-    }
-    try {
-      Crashlytics.log(i, s, s1);
-    } catch (IllegalStateException e) {
-      // This only occurs during unit tests.
-    }
+    Log.println(i, s, s1);
   }
 }

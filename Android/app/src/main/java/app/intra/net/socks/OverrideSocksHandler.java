@@ -19,8 +19,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import app.intra.sys.Names;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.analytics.FirebaseAnalytics.Param;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -221,8 +219,6 @@ public class OverrideSocksHandler extends UdpOverrideSocksHandler {
         // Socket connection duration is in seconds.
         event.putInt(Names.DURATION.name(), durationMs / 1000);
       }
-
-      FirebaseAnalytics.getInstance(context).logEvent(Names.BYTES.name(), event);
     }
   }
 
@@ -457,7 +453,6 @@ public class OverrideSocksHandler extends UdpOverrideSocksHandler {
       // Retry failed.
       event.putInt(Names.RETRY.name(), 0);
     }
-    FirebaseAnalytics.getInstance(context).logEvent(Names.EARLY_RESET.name(), event);
     return listener;
   }
 }
