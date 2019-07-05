@@ -5,7 +5,7 @@ android {
     buildToolsVersion '26.0.2'
 
     defaultConfig {
-        applicationId "liberated.app.intra"
+        applicationId "us.spotco.libretra"
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 6
