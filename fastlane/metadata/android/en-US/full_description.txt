@@ -1,0 +1,1 @@
+This is a liberated fork of Google's Intra app. It provides a DNS-over-HTTPS client via local VPN. There are a number of included servers to choose from and the user can add their own. Intended for use on devices pre-9.0, as 9.0 and newer feature DNS-over-TLS (DoT) built-in.
